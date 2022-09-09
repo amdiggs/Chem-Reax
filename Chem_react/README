@@ -1,0 +1,7 @@
+This folder contains a the source files and makefile to build REAX which will run a stochastic differential equation.
+It take six args $(num itterations) $(out file name) $(e1) $(e2) $(e3) $(e4)
+
+In int main(
+...
+reac[i] = Reax(activation energy, &species from, &species to)
+
