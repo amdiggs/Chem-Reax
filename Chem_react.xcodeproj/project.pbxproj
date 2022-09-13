@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		383C85BF28220E0300754458 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 383C85BE28220E0300754458 /* main.cpp */; };
 		384FD9D8283FE9F5005512F2 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 384FD9D7283FE9F5005512F2 /* makefile */; };
+		386645EB28CBEC78007C96EE /* ValidIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 386645E928CBEC78007C96EE /* ValidIO.cpp */; };
 		38D76E6A2824AE80006A1A8D /* rand_c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 38D76E682824AE80006A1A8D /* rand_c.cpp */; };
 		38F4FEB428C8029200782EE8 /* Reax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 38F4FEB228C8029200782EE8 /* Reax.cpp */; };
 /* End PBXBuildFile section */
@@ -30,6 +31,8 @@
 		383C85BE28220E0300754458 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		383E4F84287B5D0F00FB93FD /* reax.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = reax.in; sourceTree = "<group>"; };
 		384FD9D7283FE9F5005512F2 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		386645E928CBEC78007C96EE /* ValidIO.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ValidIO.cpp; sourceTree = "<group>"; };
+		386645EA28CBEC78007C96EE /* ValidIO.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ValidIO.hpp; sourceTree = "<group>"; };
 		38D76E682824AE80006A1A8D /* rand_c.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rand_c.cpp; sourceTree = "<group>"; };
 		38D76E692824AE80006A1A8D /* rand_c.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rand_c.hpp; sourceTree = "<group>"; };
 		38F4FEB228C8029200782EE8 /* Reax.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reax.cpp; sourceTree = "<group>"; };
@@ -73,6 +76,8 @@
 				383E4F84287B5D0F00FB93FD /* reax.in */,
 				38F4FEB228C8029200782EE8 /* Reax.cpp */,
 				38F4FEB328C8029200782EE8 /* Reax.hpp */,
+				386645E928CBEC78007C96EE /* ValidIO.cpp */,
+				386645EA28CBEC78007C96EE /* ValidIO.hpp */,
 			);
 			path = Chem_react;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 			files = (
 				38D76E6A2824AE80006A1A8D /* rand_c.cpp in Sources */,
 				38F4FEB428C8029200782EE8 /* Reax.cpp in Sources */,
+				386645EB28CBEC78007C96EE /* ValidIO.cpp in Sources */,
 				383C85BF28220E0300754458 /* main.cpp in Sources */,
 				384FD9D8283FE9F5005512F2 /* makefile in Sources */,
 			);
@@ -259,6 +265,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -267,6 +274,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

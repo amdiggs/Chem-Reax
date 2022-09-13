@@ -1,7 +1,9 @@
 This folder contains a the source files and makefile to build REAX which will run a stochastic differential equation.
-It take six args $(num itterations) $(out file name) $(e1) $(e2) $(e3) $(e4)
 
-In int main(
-...
-reac[i] = Reax(activation energy, &species from, &species to)
+
+The ChemReax Exacutable requires four command line arguments
+-out followed by the desired name of the out file.
+-in followed by the name of an input file formated like the given example.
+
+ 
 

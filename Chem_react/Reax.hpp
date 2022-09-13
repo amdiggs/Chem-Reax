@@ -16,23 +16,34 @@
 #include <sstream>
 #include <regex>
 #include "rand_c.hpp"
+#include "ValidIO.hpp"
 
 class Params{
     
 private:
     
+    int NUM_RES;
+    float NUM_ATOMS;
+    float** BAR;
+    
+    
     float MAX_TIME;
     float ATTEMPT_FREQUENCY;
     float TEMP;
     Params();
+    ~Params();
 public:
     Params(const Params&) = delete;
     static Params& Get();
     //setters
+    void set_params(std::string in_file);
     void set_temp(float temp);
     void set_time(float time);
     void set_freq(float freq);
     //getters
+    int get_res();
+    float get_atoms();
+    float** get_barriers();
     float get_temp();
     float get_time();
     float get_freq();
@@ -67,10 +78,8 @@ private:
     float m_reservoirs[50];
     float m_barriers[50][2];
     float m_time;
-    float max_time;
     
     
-    void set_params(std::string word,std::ifstream& infile);
     void set_evals();
     void set_res();
     void set_reax();

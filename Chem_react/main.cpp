@@ -75,17 +75,14 @@ int main(int argc, const char * argv[]) {
     outfile.open(out, std::ios::out);
     System my_sys(in_file);
     int i = 0;
-    /*
     while(my_sys.get_time() < Params::Get().get_time()) {
         if (!(i%10000)) {
-            std::cout << "RUNNING..." << std::endl;
+            //std::cout << "RUNNING..." << std::endl;
             
         }
         my_sys.get_event();
         i++;
     }
-    
-     */
     my_sys.print_bar();
     my_sys.print_res();
     outfile.close();

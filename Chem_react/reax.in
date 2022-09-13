@@ -1,15 +1,21 @@
-#ITEM: NUM_RES
+ITEM: NUM_RES
 5
-#ITEM: NUM_ATOMS
+ITEM: NUM_ATOMS
 1.0e+7
-#ITEM: BARRIERS
+ITEM: BARRIERS
 0.0 1.15
 0.27 0.41
 0.41 0.41
 0.41 0.41
+1.9 0.0
 
 
-#ITEM: TIME
-2.5
+ITEM: TIME
+2.5 #time is lenght of the simulation in weeks. NOTE  this is simulation time ###NOT WALL TIME!!!!###
 
-#ITEM: jack
+ITEM: TEMP
+#The default Temp is 300K
+
+ITEM: FREQUENCY
+#The default Frequency is 1.6x10^18 which is the attempt frequency of mono-hydrides in silicon scaled to weeks
+

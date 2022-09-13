@@ -67,67 +67,12 @@ m_num_res(5), m_num_reacs(10), m_time(0.0){
 }
 
 System::System(std::string in_file): m_time(0.0) {
-    std::ifstream infile (in_file);
-    std::string line;
-    std::string name;
-    std::string item;
-    std::stringstream ss;
-    int wrd;
-    float param;
-    if (infile.is_open()){
-        while (getline(infile,line)) {
-            if(ITEM(line, "#ITEM")){
-                ss << line;
-                ss >> item >> name;
-                wrd = word_to_int(name);
-                
-                switch (wrd) {
-                    case 569:
-                        std::cout << "NUM_RES =?" << name << std::endl;
-                        infile >> m_num_res;
-                        m_num_reacs = 2*m_num_res;
-                        break;
-                    case 723:
-                        std::cout << "NUM_ATOMS =?" << name << std::endl;
-                        infile >> m_num_atoms;
-                        set_res();
-                        break;
-                    case 602:
-                        std::cout << "BARRIERS =?" << name << std::endl;
-                        if (m_num_res != 0){
-                            for (int j = 0; j<m_num_res; j++){
-                                infile >> m_barriers[j][0] >> m_barriers[j][1];
-                            }
-                            
-                        }
-                        break;
-                        
-                    case 303:
-                        std::cout << "TIME =?" << name << std::endl;
-                        infile >> param;
-                        Params::Get().set_time(param);
-                        break;
-                    case 310:
-                        std::cout << "TEMP =?" << name << std::endl;
-                        infile >> param;
-                        Params::Get().set_temp(param);
-                        break;
-                    case 690:
-                        std::cout << "FREQUENCY =?" << name << std::endl;
-                        infile >> param;
-                        Params::Get().set_freq(param);
-                        break;
-                        
-                    default:
-                        break;
-                }
-                
-                ss.clear();
-
-            }
-        }
-    }
-    else{std::cout << "file did not open" << std::endl; exit(4);}
+    Params::Get().set_params(in_file);
+    m_num_res = Params::Get().get_res();
+    m_num_reacs = 2*m_num_res;
+    m_num_atoms = Params::Get().get_atoms();
+    set_res();
+    set_evals();
     set_reax();
 }
 
@@ -136,71 +81,6 @@ System::~System() {
     
 }
 
-void System::set_params(std::string word,std::ifstream& infile){
-    std::string line;
-    std::stringstream ss;
-    int wrd = word_to_int(word);
-    float param;
-    
-    switch (wrd) {
-        case 569:
-            std::cout << "NUM_RES =?" << word << std::endl;
-            getline(infile,line);
-            if (!line.empty()) {
-                ss << line;
-                ss >> m_num_res;
-                m_num_reacs = 2*m_num_res;
-                ss.clear();
-                break;
-            }
-            else{exit(5);}
-        case 723:
-            std::cout << "NUM_ATOMS =?" << word << std::endl;
-            infile >> m_num_atoms;
-            set_res();
-            break;
-        case 602:
-            std::cout << "BARRIERS =?" << word << std::endl;
-                for (int j = 0; j<m_num_res; j++){
-                    getline(infile,line);
-                    if (!line.empty()) {
-                        ss << line;
-                        if (!ss.) {
-                            <#statements#>
-                        }
-                        continue;
-                    }
-                    else{
-                        std::cout << "Number of barriers does not match numer of reservoirs\n Better check your input file!!" << std::endl;
-                        exit(5);
-                    }
-                }
-            break;
-            
-        case 303:
-            std::cout << "TIME =?" << word << std::endl;
-            if(infile >> param){
-                Params::Get().set_time(param);
-            }
-            break;
-        case 310:
-            std::cout << "TEMP =?" << word << std::endl;
-            if(infile >> param){
-                Params::Get().set_temp(param);
-            }
-            break;
-        case 690:
-            std::cout << "FREQUENCY =?" << word << std::endl;
-            if(infile >> param){
-                Params::Get().set_freq(param);
-            }
-            break;
-            
-        default:
-            break;
-    }
-    
-}
 
 
 void System::set_res(){
@@ -212,17 +92,10 @@ void System::set_res(){
 }
 
 void System::set_evals(){
-    float e_vals[10][2] ={
-        {2.9, 1.15},
-        {0.27, 0.41},
-        {0.41, 0.41},
-        {0.41, 0.41},
-        {1.9, 2.9}
-        
-    };
+    float** bars = Params::Get().get_barriers();
     for (int i = 0; i< m_num_res; i++){
-        m_barriers[i][0] = e_vals[i][0];
-        m_barriers[i][1] = e_vals[i][1];
+        m_barriers[i][0] = bars[i][0];
+        m_barriers[i][1] = bars[i][1];
     }
     
     
@@ -331,8 +204,17 @@ unsigned int word_to_int(std::string word){
 
 
 Params::Params()
-: MAX_TIME(0.0), TEMP(room_T), ATTEMPT_FREQUENCY(ARH)
+:NUM_RES(0), NUM_ATOMS(0.0), BAR(nullptr), MAX_TIME(0.0), TEMP(room_T), ATTEMPT_FREQUENCY(ARH)
 {}
+
+Params::~Params(){
+    if(NUM_RES!=0){
+    for (int i =0; i<NUM_RES; i++) {
+        free(BAR[i]);
+    }
+    free(BAR);
+    }
+}
 
 Params &Params::Get() { 
     static Params inst;
@@ -340,6 +222,155 @@ Params &Params::Get() {
 }
 
 
+void Params::set_params(std::string in_file){
+    std::ifstream infile (in_file);
+    std::string line;
+    std::string name;
+    std::string item;
+    std::stringstream ss, s2;
+    std::string temp;
+    std::string temp2;
+    int wrd;
+    Valid va;
+    if (infile.is_open()){
+        while (getline(infile,line)) {
+            if(ITEM(line, "ITEM:")){
+                ss << line;
+                ss >> item >> name;
+                wrd = word_to_int(name);
+                switch (wrd) {
+                    case 569:
+                        std::cout << "NUM_RES =?" << name << std::endl;
+                        getline(infile,line);
+                        if (!line.empty()) {
+                            s2 << line;
+                            s2 >> temp;
+                            NUM_RES = va.get_int(temp);
+                            s2.str(std::string());
+                            s2.clear();
+                            break;
+                        }
+                        else{std::cout << "You must include the number of Reservoirs!!\n"; exit(5);}
+                    case 723:
+                        std::cout << "NUM_ATOMS =?" << name << std::endl;
+                        getline(infile,line);
+                        if (!line.empty()) {
+                            s2 << line;
+                            s2 >> temp;
+                            if(va.match_float(temp)){
+                                NUM_ATOMS = std::atof(temp.c_str());
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else{std::cout << "You must include the number of Aoms!!\n"; exit(5);}
+                        }
+                        else{exit(5);}
+                    case 602:
+                        std::cout << "BARRIERS =?" << name << std::endl;
+                        BAR = (float**)malloc(NUM_RES*sizeof(float*));
+                            for (int j = 0; j<NUM_RES; j++){
+                                getline(infile,line);
+                                if (!line.empty()) {
+                                    s2 << line;
+                                    s2 >> temp >> temp2;
+                                    if(va.match_float(temp) && va.match_float(temp2)){
+                                        BAR[j] = (float*) malloc(2*sizeof(float));
+                                        BAR[j][0] = std::atof(temp.c_str());
+                                        BAR[j][1] = std::atof(temp2.c_str());
+                                        s2.str(std::string());
+                                        s2.clear();
+                                    }
+                                    else{std::cout << "You must include the correct number of barriers!!\n"; exit(5);}
+                                }
+                                else{std::cout << "The number of barriers must = 2* num reservoirs!!\n";exit(5);}
+                            }
+                        break;
+                        
+                    case 303:
+                        std::cout << "TIME =?" << name << std::endl;
+                        getline(infile,line);
+                        if (!line.empty()) {
+                            s2 << line;
+                            s2 >> temp;
+                            if(va.match_float(temp)){
+                                MAX_TIME = std::atof(temp.c_str());
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else{std::cout << "The run Time must be a single float!!\n"; exit(5);}
+                        }
+                        else{std::cout << "You must include the run Time!!\n"; exit(5);}
+                        break;
+                    case 310:
+                        getline(infile,line);
+                        if (!line.empty()) {
+                            s2 << line;
+                            s2 >> temp;
+                            if(va.match_float(temp)){
+                                TEMP = std::atof(temp.c_str());
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else if (va.match_comment(temp)){
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else{std::cout << "The Temp must be a float!!\n"; exit(5);}
+                        }
+                        break;
+                        
+                    case 690:
+                        getline(infile,line);
+                        if (!line.empty()) {
+                            s2 << line;
+                            s2 >> temp;
+                            if(va.match_float(temp)){
+                                ATTEMPT_FREQUENCY = std::atof(temp.c_str());
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else if (va.match_comment(temp)){
+                                s2.str(std::string());
+                                s2.clear();
+                                break;
+                            }
+                            else{std::cout << "The Frequency must be a float!!\n"; exit(5);}
+                        }
+                        break;
+                        
+                        
+                    default:
+                        break;
+                }//switch
+                ss.str(std::string());
+                ss.clear();
+                
+            }//if(ITEM)
+        }//while()
+                
+    }//if(file.isopen)
+            
+    else{std::cout << "file did not open" << std::endl; exit(4);}
+    
+}
+
+
+int Params::get_res(){
+    return NUM_RES;
+}
+
+float Params::get_atoms(){
+    return NUM_ATOMS;
+}
+
+float** Params::get_barriers(){
+    return BAR;
+}
 
 float Params::get_temp(){
     return TEMP;
@@ -350,6 +381,7 @@ float Params::get_time(){
 float Params::get_freq(){
     return ATTEMPT_FREQUENCY;
 }
+
 
 void Params::set_temp(float temp) { 
     this -> TEMP = temp;

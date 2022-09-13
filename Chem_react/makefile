@@ -1,12 +1,14 @@
-REAX: main.o rand_c.o Reax.o
-	g++ -o REAX main.o rand_c.o Reax.o
+ChemReax: main.o rand_c.o Reax.o ValidIO.o
+	clang++ -o ChemReax main.o rand_c.o Reax.o ValidIO.o
 
 main.o: main.cpp rand_c.hpp Reax.hpp
-	g++ -c main.cpp
+	clang++ -c main.cpp
 
 rand_c.o: rand_c.hpp
 
-Reax.o: Reax.hpp
+Reax.o: Reax.hpp ValidIO.hpp
+
+ValidIO.o: ValidIO.hpp
 
 clean:
-	rm *.o
+	rm -rf *.o
